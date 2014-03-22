@@ -15,4 +15,20 @@ public class Player : MonoBehaviour {
 	void Update () {
 	
 	}
+
+	public void Begin() {
+
+	}
+
+	public void Pause() {
+
+	}
+
+	public void Finish() {
+
+	}
+
+	public bool IsDefeated() {
+		return false;
+	}
 }
