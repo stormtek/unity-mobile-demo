@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour {
 	
 	void Start () {
 		players = FindObjectsOfType(typeof(Player)) as Player[];
+		//ideally this would be from a player selection menu
+		//but that is beyond what is needed for this demo
 		foreach(Player player in players) {
 			if(player.isHuman) activePlayer = player;
 		}
@@ -57,6 +59,7 @@ public class GameManager : MonoBehaviour {
 				if(started && !finished) startButtonText = "Resume";
 				else if(finished) startButtonText = "New Game";
 				if(GUI.Button(new Rect(buttonLeft, buttonTop, buttonWidth, buttonHeight), startButtonText)) {
+					Time.timeScale = 1.0f;
 					started = true;
 					showMenu = false;
 					foreach(Player player in players) {
@@ -84,6 +87,7 @@ public class GameManager : MonoBehaviour {
 			float buttonLeft = Screen.width - padding - buttonWidth;
 			float buttonTop = Screen.height - padding - buttonHeight;
 			if(GUI.Button(new Rect(buttonLeft, buttonTop, buttonWidth, buttonHeight), "Menu")) {
+				Time.timeScale = 0.0f;
 				showMenu = true;
 				foreach(Player player in players) {
 					player.Pause();
@@ -96,5 +100,9 @@ public class GameManager : MonoBehaviour {
 
 	public Player GetActivePlayer() {
 		return activePlayer;
+	}
+
+	public bool Paused() {
+		return showMenu;
 	}
 }

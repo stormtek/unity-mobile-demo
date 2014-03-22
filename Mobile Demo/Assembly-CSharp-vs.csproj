@@ -49,6 +49,9 @@
      <Compile Include="Assets\Scripts\Element.cs" />
      <Compile Include="Assets\Scripts\GameManager.cs" />
      <Compile Include="Assets\Scripts\Player.cs" />
+     <Compile Include="Assets\Scripts\Resources.cs" />
+     <Compile Include="Assets\Scripts\Soldier.cs" />
+     <Compile Include="Assets\Scripts\UserInput.cs" />
      <Compile Include="Assets\Scripts\WeaponBeam.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
