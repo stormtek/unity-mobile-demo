@@ -3,10 +3,14 @@ using System.Collections;
 
 public class Soldier : MonoBehaviour {
 
+	public float moveSpeed = 2, rotateSpeed = 75;
+
 	private Player owner;
 	private WeaponBeam[] beams;
 	private bool started = false, weaponBeamsOn = false;
-	private bool selected = false;
+	private bool selected = false, moving = false, rotating = false;
+	private Vector3 destination = Resources.InvalidPosition;
+	private Quaternion targetRotation;
 
 	// Use this for initialization
 	void Start () {
@@ -18,7 +22,21 @@ public class Soldier : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+		if(!started) return;
+		if(rotating) {
+			transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
+			Quaternion inverseTargetRotation = new Quaternion(-targetRotation.x,-targetRotation.y,-targetRotation.z,-targetRotation.w);
+			if(transform.rotation == targetRotation || transform.rotation == inverseTargetRotation) {
+				rotating = false;
+				moving = true;
+			}
+		} else if(moving) {
+			transform.position = Vector3.MoveTowards(transform.position, destination, moveSpeed * Time.deltaTime);
+			if(transform.position == destination) {
+				destination = Resources.InvalidPosition;
+				moving = false;
+			}
+		}
 	}
 
 	private void SetColor(Color color) {
@@ -71,7 +89,10 @@ public class Soldier : MonoBehaviour {
 	}
 
 	public void SetDestination(Vector3 destination) {
-
+		this.destination = destination;
+		targetRotation = Quaternion.LookRotation(destination - transform.position);
+		rotating = true;
+		moving = false;
 	}
 
 	public void Attack(Soldier target) {
