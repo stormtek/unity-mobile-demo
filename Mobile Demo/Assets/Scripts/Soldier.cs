@@ -4,6 +4,7 @@ using System.Collections;
 public class Soldier : MonoBehaviour {
 
 	public float moveSpeed = 2, rotateSpeed = 75;
+	public float weaponRange = 5.0f, weaponDamage = 0.35f;
 
 	private Player owner;
 	private WeaponBeam[] beams;
@@ -11,6 +12,9 @@ public class Soldier : MonoBehaviour {
 	private bool selected = false, moving = false, rotating = false;
 	private Vector3 destination = Resources.InvalidPosition;
 	private Quaternion targetRotation;
+	private Soldier target;
+	private float healthPoints = 100, maxHealthPoints = 100;
+	private int numKills = 0;
 
 	// Use this for initialization
 	void Start () {
@@ -23,6 +27,11 @@ public class Soldier : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if(!started) return;
+		if(!target && weaponBeamsOn) TurnOffWeaponBeams();
+		if(target) {
+			if(selected) target.Select();
+			else target.Deselect();
+		}
 		if(rotating) {
 			transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
 			Quaternion inverseTargetRotation = new Quaternion(-targetRotation.x,-targetRotation.y,-targetRotation.z,-targetRotation.w);
@@ -36,6 +45,8 @@ public class Soldier : MonoBehaviour {
 				destination = Resources.InvalidPosition;
 				moving = false;
 			}
+		} else if(target) {
+			MakeAttack();
 		}
 	}
 
@@ -69,6 +80,27 @@ public class Soldier : MonoBehaviour {
 			beam.transform.renderer.enabled = false;
 		}
 	}
+	
+	private bool TargetTooFarAway() {
+		if(!target) return false;
+		return Mathf.Abs((target.transform.position - transform.position).magnitude) > weaponRange;
+	}
+	
+	private Vector3 GetAttackPosition() {
+		Vector3 targetLocation = target.transform.position;
+		Vector3 direction = targetLocation - transform.position;
+		float targetDistance = direction.magnitude;
+		float distanceToTravel = targetDistance - (0.9f * weaponRange);
+		return Vector3.Lerp(transform.position, targetLocation, distanceToTravel / targetDistance);
+	}
+	
+	private void MakeAttack() {
+		TurnOnWeaponBeams();
+		if(target.Damage(weaponDamage)) {
+			numKills += 1;
+			if(owner) owner.AddKill();
+		}
+	}
 
 	public bool IsControlledBy(Player player) {
 		return owner == player;
@@ -96,7 +128,12 @@ public class Soldier : MonoBehaviour {
 	}
 
 	public void Attack(Soldier target) {
-
+		this.target = target;
+		if(TargetTooFarAway()) destination = GetAttackPosition();
+		else destination = transform.position;
+		targetRotation = Quaternion.LookRotation(target.transform.position - transform.position);
+		rotating = true;
+		moving = false;
 	}
 
 	public void Begin() {
@@ -113,4 +150,15 @@ public class Soldier : MonoBehaviour {
 		started = false;
 		Hide();
 	}
+
+	public bool Damage(float damage) {
+		healthPoints -= damage;
+		if(healthPoints < 0) {
+			if(owner) owner.AddDeath();
+			Destroy(gameObject);
+			return true;
+		}
+		return false;
+	}
+
 }

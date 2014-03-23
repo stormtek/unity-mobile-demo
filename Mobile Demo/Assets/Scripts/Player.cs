@@ -17,7 +17,7 @@ public class Player : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+		
 	}
 
 	public void Begin() {
@@ -71,5 +71,13 @@ public class Player : MonoBehaviour {
 				selectedSoldier.SetDestination(new Vector3(hitPoint.x, 0, hitPoint.z));
 			}
 		}
+	}
+
+	public void AddKill() {
+
+	}
+
+	public void AddDeath() {
+
 	}
 }
