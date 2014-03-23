@@ -6,8 +6,10 @@ public static class Resources {
 	public static float zoomSpeed = 15.0f;
 	public static float panSpeed = 15.0f;
 	public static float rotateSpeed = 10.0f;
-	public static  float waitTime = 0.1f;
-	public static  int edgeBounds = 50;
+	public static float waitTime = 0.1f;
+	public static float lowSplit = 0.35f;
+	public static float highSplit = 0.65f;
+	public static int edgeBounds = 50;
 	public static Rect leftZone { get { return new Rect(0, 0, edgeBounds, Screen.height); } }
 	public static Rect rightZone { get { return new Rect(Screen.width - edgeBounds, 0, edgeBounds, Screen.height); } }
 	public static Rect topZone { get { return new Rect(0, Screen.height - edgeBounds, Screen.width, edgeBounds); } }

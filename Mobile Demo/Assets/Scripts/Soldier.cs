@@ -3,6 +3,7 @@ using System.Collections;
 
 public class Soldier : MonoBehaviour {
 
+	public string displayName = "Soldier";
 	public float moveSpeed = 2, rotateSpeed = 75;
 	public float weaponRange = 5.0f, weaponDamage = 0.35f;
 
@@ -159,6 +160,18 @@ public class Soldier : MonoBehaviour {
 			return true;
 		}
 		return false;
+	}
+
+	public Soldier GetTarget() {
+		return target;
+	}
+
+	public string GetDisplayName() {
+		return displayName + " (Kills: " + numKills + ")";
+	}
+	
+	public float GetHealthPercentage() {
+		return healthPoints / maxHealthPoints;
 	}
 
 }

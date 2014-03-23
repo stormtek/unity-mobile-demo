@@ -82,4 +82,8 @@ public class Player : MonoBehaviour {
 	public void AddDeath() {
 		teamDeaths++;
 	}
+
+	public Soldier GetSelectedSoldier() {
+		return selectedSoldier;
+	}
 }

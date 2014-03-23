@@ -7,6 +7,7 @@ public class GameManager : MonoBehaviour {
 
 	private Player[] players;
 	private Player activePlayer;
+	private HUD hud;
 	private bool started = false, finished = false, showMenu = true;
 	private string winningMessage = "";
 	private float padding = 20;
@@ -18,6 +19,8 @@ public class GameManager : MonoBehaviour {
 		foreach(Player player in players) {
 			if(player.isHuman) activePlayer = player;
 		}
+		hud = transform.root.GetComponent<HUD>();
+		if(hud) hud.SetActivePlayer(activePlayer);
 	}
 
 	void Update () {
@@ -35,7 +38,10 @@ public class GameManager : MonoBehaviour {
 			finished = true;
 			showMenu = true;
 			winningMessage = undefeatedPlayers[0].displayName + " Wins!";
-			foreach(Player player in players) player.Finish();
+			foreach(Player player in players) {
+				player.Finish();
+			}
+			hud.Finish();
 		}
 	}
 
@@ -63,6 +69,7 @@ public class GameManager : MonoBehaviour {
 					foreach(Player player in players) {
 						player.Begin();
 					}
+					hud.Begin();
 				}
 			}
 			buttonTop += buttonHeight + padding;
@@ -90,6 +97,7 @@ public class GameManager : MonoBehaviour {
 				foreach(Player player in players) {
 					player.Pause();
 				}
+				hud.Pause();
 			}
 		}
 		GUI.EndGroup();
