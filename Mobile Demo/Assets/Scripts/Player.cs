@@ -9,6 +9,7 @@ public class Player : MonoBehaviour {
 
 	private bool started = false;
 	private Soldier selectedSoldier;
+	private int teamKils = 0, teamDeaths = 0;
 
 	// Use this for initialization
 	void Start () {
@@ -42,7 +43,8 @@ public class Player : MonoBehaviour {
 	}
 
 	public bool IsDefeated() {
-		return false;
+		Soldier[] soldiers = GetComponentsInChildren<Soldier>();
+		return soldiers==null || soldiers.Length == 0;
 	}
 
 	public void HandleClick(GameObject hitObject, Vector3 hitPoint) {
@@ -74,10 +76,10 @@ public class Player : MonoBehaviour {
 	}
 
 	public void AddKill() {
-
+		teamKils++;
 	}
 
 	public void AddDeath() {
-
+		teamDeaths++;
 	}
 }

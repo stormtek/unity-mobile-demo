@@ -7,7 +7,7 @@ public class GameManager : MonoBehaviour {
 
 	private Player[] players;
 	private Player activePlayer;
-	private bool started = false, finished = false, showMenu = true, invalid = false;
+	private bool started = false, finished = false, showMenu = true;
 	private string winningMessage = "";
 	private float padding = 20;
 	
@@ -22,7 +22,6 @@ public class GameManager : MonoBehaviour {
 
 	void Update () {
 		if(!activePlayer) {
-			invalid = true;
 			finished = true;
 			winningMessage = "Unable to play without a human player selected";
 		}
@@ -54,10 +53,9 @@ public class GameManager : MonoBehaviour {
 			float buttonLeft = menuLeft + padding;
 			float buttonTop = menuTop + padding;
 			GUI.Box(new Rect(menuLeft, menuTop, menuWidth, menuHeight), "");
-			if(!invalid) {
+			if(!finished) {
 				string startButtonText = "Start";
-				if(started && !finished) startButtonText = "Resume";
-				else if(finished) startButtonText = "New Game";
+				if(started) startButtonText = "Resume";
 				if(GUI.Button(new Rect(buttonLeft, buttonTop, buttonWidth, buttonHeight), startButtonText)) {
 					Time.timeScale = 1.0f;
 					started = true;
