@@ -1,14 +1,11 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/GameManager.cs">
+  <MonoDevelop.Ide.Workspace />
+  <MonoDevelop.Ide.Workbench ActiveDocument="../../../Desktop/project 1 - 4.3.4 (upgrade)/Assets/new scripts/Avatar/Avatar.cs">
     <Files>
-      <File FileName="Assets/Scripts/Element.cs" Line="6" Column="2" />
-      <File FileName="Assets/Scripts/WeaponBeam.cs" Line="1" Column="1" />
-      <File FileName="Assets/Scripts/Player.cs" Line="46" Column="55" />
-      <File FileName="Assets/Scripts/GameManager.cs" Line="10" Column="65" />
-      <File FileName="Assets/Scripts/UserInput.cs" Line="29" Column="31" />
-      <File FileName="Assets/Scripts/Resources.cs" Line="10" Column="2" />
-      <File FileName="Assets/Scripts/Soldier.cs" Line="16" Column="34" />
+      <File FileName="../../../Desktop/project 1 - 4.3.4 (upgrade)/Assets/new scripts/Avatar/Avatar.cs" Line="107" Column="4" />
+      <File FileName="../../../Desktop/project 1 - 4.3.4 (upgrade)/Assets/new scripts/Camera/CameraManager.cs" Line="1" Column="1" />
+      <File FileName="../../../Desktop/project 1 - 4.3.4 (upgrade)/Assets/new scripts/Manager/VideoHandler.cs" Line="23" Column="35" />
+      <File FileName="../../../Desktop/project 1 - 4.3.4 (upgrade)/Assets/new scripts/Manager/ProjectManager.cs" Line="8" Column="51" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

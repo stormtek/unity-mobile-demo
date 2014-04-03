@@ -48,7 +48,7 @@ public class Player : MonoBehaviour {
 	}
 
 	public void HandleClick(GameObject hitObject, Vector3 hitPoint) {
-		if(hitObject && hitObject.name != "Ground") { //clicked on something that was not the ground plane
+		if(hitObject && hitObject.name != "Ground" && hitObject.name != "LOS") { //clicked on something that was not the ground plane
 			Soldier soldier = hitObject.transform.parent.GetComponent<Soldier>();
 			if(soldier) { //clicked on cube
 				if(selectedSoldier) { //already have cube selected
@@ -70,7 +70,10 @@ public class Player : MonoBehaviour {
 			}
 		} else if(selectedSoldier) {
 			if(hitPoint != Resources.InvalidPosition) {
-				selectedSoldier.SetDestination(new Vector3(hitPoint.x, 0, hitPoint.z));
+				float distance = Vector3.Distance(hitPoint, selectedSoldier.transform.position);
+				if(distance < selectedSoldier.getRange()) {
+					selectedSoldier.SetDestination(new Vector3(hitPoint.x, 0, hitPoint.z));
+				}
 			}
 		}
 	}

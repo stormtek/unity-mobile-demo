@@ -5,10 +5,11 @@ public class Soldier : MonoBehaviour {
 
 	public string displayName = "Soldier";
 	public float moveSpeed = 2, rotateSpeed = 75;
-	public float weaponRange = 5.0f, weaponDamage = 0.35f;
+	public float weaponDamage = 0.35f;
 
 	private Player owner;
 	private WeaponBeam[] beams;
+	private LOS los;
 	private bool started = false, weaponBeamsOn = false;
 	private bool selected = false, moving = false, rotating = false;
 	private Vector3 destination = Resources.InvalidPosition;
@@ -16,12 +17,20 @@ public class Soldier : MonoBehaviour {
 	private Soldier target;
 	private float healthPoints = 100, maxHealthPoints = 100;
 	private int numKills = 0;
+	private float range = 0.0f;
 
 	// Use this for initialization
 	void Start () {
 		owner = transform.root.GetComponent<Player>();
 		if(owner) SetColor(owner.teamColor);
 		beams = GetComponentsInChildren<WeaponBeam>();
+		los = GetComponentInChildren<LOS>();
+		if(los) {
+			//we are assuming the LOS object is a plane which has a base size 10x larger than a cube
+			//we are also assuming that this is square rather than rectangular
+			float losScale = los.transform.localScale.x;
+			range = 10.0f / 2 * losScale;
+		}
 		Hide();
 	}
 	
@@ -58,7 +67,9 @@ public class Soldier : MonoBehaviour {
 
 	private void Show() {
 		foreach(Renderer renderer in transform.GetComponentsInChildren<Renderer>()) {
-			renderer.enabled = true;
+			if(renderer.tag != "LOS") {
+				renderer.enabled = true;
+			}
 		}
 	}
 	
@@ -84,14 +95,14 @@ public class Soldier : MonoBehaviour {
 	
 	private bool TargetTooFarAway() {
 		if(!target) return false;
-		return Mathf.Abs((target.transform.position - transform.position).magnitude) > weaponRange;
+		return Mathf.Abs((target.transform.position - transform.position).magnitude) > range;
 	}
 	
 	private Vector3 GetAttackPosition() {
 		Vector3 targetLocation = target.transform.position;
 		Vector3 direction = targetLocation - transform.position;
 		float targetDistance = direction.magnitude;
-		float distanceToTravel = targetDistance - (0.9f * weaponRange);
+		float distanceToTravel = targetDistance - (0.9f * range);
 		return Vector3.Lerp(transform.position, targetLocation, distanceToTravel / targetDistance);
 	}
 	
@@ -110,11 +121,13 @@ public class Soldier : MonoBehaviour {
 	public void Select() {
 		selected = true;
 		SetColor(owner.selectedColor);
+		if(los) los.renderer.enabled = true;
 	}
 	
 	public void Deselect() {
 		selected = false;
 		if(owner) SetColor(owner.teamColor);
+		if(los) los.renderer.enabled = false;
 	}
 
 	public bool IsSelected() {
@@ -126,6 +139,11 @@ public class Soldier : MonoBehaviour {
 		targetRotation = Quaternion.LookRotation(destination - transform.position);
 		rotating = true;
 		moving = false;
+		TurnOffWeaponBeams();
+		if(target) {
+			target.Deselect();
+			target = null;
+		}
 	}
 
 	public void Attack(Soldier target) {
@@ -172,6 +190,10 @@ public class Soldier : MonoBehaviour {
 	
 	public float GetHealthPercentage() {
 		return healthPoints / maxHealthPoints;
+	}
+
+	public float getRange() {
+		return range;
 	}
 
 }

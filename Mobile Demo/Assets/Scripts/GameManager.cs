@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour {
 	private Player[] players;
 	private Player activePlayer;
 	private HUD hud;
+	private UserInput userInput;
 	private bool started = false, finished = false, showMenu = true;
 	private string winningMessage = "";
 	private float padding = 20;
@@ -21,6 +22,8 @@ public class GameManager : MonoBehaviour {
 		}
 		hud = transform.root.GetComponent<HUD>();
 		if(hud) hud.SetActivePlayer(activePlayer);
+		userInput = transform.root.GetComponent<UserInput>();
+		if(userInput) userInput.enabled = false;
 	}
 
 	void Update () {
@@ -69,7 +72,8 @@ public class GameManager : MonoBehaviour {
 					foreach(Player player in players) {
 						player.Begin();
 					}
-					hud.Begin();
+					if(hud) hud.Begin();
+					if(userInput) userInput.enabled = true;
 				}
 			}
 			buttonTop += buttonHeight + padding;
@@ -97,7 +101,8 @@ public class GameManager : MonoBehaviour {
 				foreach(Player player in players) {
 					player.Pause();
 				}
-				hud.Pause();
+				if(hud) hud.Pause();
+				if(userInput) userInput.enabled = false;
 			}
 		}
 		GUI.EndGroup();
