@@ -11,7 +11,7 @@ public class Player : MonoBehaviour {
 	private SpawnPoint spawnPoint;
 	private bool started = false;
 	private Soldier selectedSoldier;
-	private int teamKils = 0, teamDeaths = 0;
+	private int teamKills = 0, teamDeaths = 0, wins = 0;
 
 	// Use this for initialization
 	void Start () {
@@ -24,7 +24,8 @@ public class Player : MonoBehaviour {
 	}
 
 	public void Begin() {
-
+		Soldier[] existingSoldiers = GetComponentsInChildren<Soldier>();
+		foreach(Soldier oldSoldier in existingSoldiers) Destroy(oldSoldier);
 		SpawnPosition[] points = spawnPoint.GetComponentsInChildren<SpawnPosition>();
 		foreach(SpawnPosition position in points) {
 			Soldier newSoldier = (Soldier)Instantiate(soldier, position.transform.position, position.transform.rotation);
@@ -45,6 +46,13 @@ public class Player : MonoBehaviour {
 		started = false;
 		foreach(Soldier soldier in GetComponentsInChildren<Soldier>()) {
 			soldier.Finish();
+		}
+	}
+
+	public void Resume() {
+		started = true;
+		foreach (Soldier soldier in GetComponentsInChildren<Soldier>()) {
+			soldier.Resume();
 		}
 	}
 
@@ -86,14 +94,22 @@ public class Player : MonoBehaviour {
 	}
 
 	public void AddKill() {
-		teamKils++;
+		teamKills++;
 	}
 
 	public void AddDeath() {
 		teamDeaths++;
 	}
 
+	public void AddWin() {
+		wins++;
+	}
+
 	public Soldier GetSelectedSoldier() {
 		return selectedSoldier;
+	}
+
+	public int GetNumberOfWins() {
+		return wins;
 	}
 }

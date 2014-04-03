@@ -38,10 +38,13 @@ public class GameManager : MonoBehaviour {
 			}
 		}
 		if(undefeatedPlayers.Count == 1) {
+			started = false;
 			finished = true;
 			showMenu = true;
-			winningMessage = undefeatedPlayers[0].displayName + " Wins!";
+			undefeatedPlayers[0].AddWin();
+			winningMessage = undefeatedPlayers[0].displayName + " Wins! ..... ";
 			foreach(Player player in players) {
+				winningMessage += player.displayName + ": " + player.GetNumberOfWins() + " ";
 				player.Finish();
 			}
 			hud.Finish();
@@ -62,19 +65,23 @@ public class GameManager : MonoBehaviour {
 			float buttonLeft = menuLeft + padding;
 			float buttonTop = menuTop + padding;
 			GUI.Box(new Rect(menuLeft, menuTop, menuWidth, menuHeight), "");
-			if(!finished) {
-				string startButtonText = "Start";
-				if(started) startButtonText = "Resume";
-				if(GUI.Button(new Rect(buttonLeft, buttonTop, buttonWidth, buttonHeight), startButtonText)) {
-					Time.timeScale = 1.0f;
+			string startButtonText = "New Game";
+			if(started) startButtonText = "Resume";
+			if(GUI.Button(new Rect(buttonLeft, buttonTop, buttonWidth, buttonHeight), startButtonText)) {
+				Time.timeScale = 1.0f;
+				if(!started) {
 					started = true;
-					showMenu = false;
 					foreach(Player player in players) {
 						player.Begin();
 					}
-					if(hud) hud.Begin();
-					if(userInput) userInput.enabled = true;
+				} else {
+					foreach(Player player in players) {
+						player.Resume();
+					}
 				}
+				showMenu = false;
+				if(hud) hud.Begin();
+				if(userInput) userInput.enabled = true;
 			}
 			buttonTop += buttonHeight + padding;
 			if(GUI.Button(new Rect(buttonLeft, buttonTop, buttonWidth, buttonHeight), "Exit")) {

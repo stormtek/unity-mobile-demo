@@ -164,6 +164,10 @@ public class Soldier : MonoBehaviour {
 		started = false;
 	}
 
+	public void Resume() {
+		started = true;
+	}
+
 	public void Finish() {
 		started = false;
 		Hide();
