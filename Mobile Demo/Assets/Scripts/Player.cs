@@ -6,14 +6,16 @@ public class Player : MonoBehaviour {
 	public bool isHuman = false;
 	public string displayName = "Player";
 	public Color teamColor, selectedColor;
+	public Soldier soldier;
 
+	private SpawnPoint spawnPoint;
 	private bool started = false;
 	private Soldier selectedSoldier;
 	private int teamKils = 0, teamDeaths = 0;
 
 	// Use this for initialization
 	void Start () {
-	
+		spawnPoint = GetComponentInChildren<SpawnPoint>();
 	}
 	
 	// Update is called once per frame
@@ -22,10 +24,14 @@ public class Player : MonoBehaviour {
 	}
 
 	public void Begin() {
-		started = true;
-		foreach(Soldier soldier in GetComponentsInChildren<Soldier>()) {
-			soldier.Begin();
+
+		SpawnPosition[] points = spawnPoint.GetComponentsInChildren<SpawnPosition>();
+		foreach(SpawnPosition position in points) {
+			Soldier newSoldier = (Soldier)Instantiate(soldier, position.transform.position, position.transform.rotation);
+			newSoldier.transform.parent = this.transform;
+			newSoldier.Begin();
 		}
+		started = true;
 	}
 
 	public void Pause() {
@@ -43,6 +49,7 @@ public class Player : MonoBehaviour {
 	}
 
 	public bool IsDefeated() {
+		if(!started) return false;
 		Soldier[] soldiers = GetComponentsInChildren<Soldier>();
 		return soldiers==null || soldiers.Length == 0;
 	}

@@ -21,17 +21,7 @@ public class Soldier : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		owner = transform.root.GetComponent<Player>();
-		if(owner) SetColor(owner.teamColor);
-		beams = GetComponentsInChildren<WeaponBeam>();
-		los = GetComponentInChildren<LOS>();
-		if(los) {
-			//we are assuming the LOS object is a plane which has a base size 10x larger than a cube
-			//we are also assuming that this is square rather than rectangular
-			float losScale = los.transform.localScale.x;
-			range = 10.0f / 2 * losScale;
-		}
-		Hide();
+		
 	}
 	
 	// Update is called once per frame
@@ -156,9 +146,18 @@ public class Soldier : MonoBehaviour {
 	}
 
 	public void Begin() {
+
+		owner = transform.root.GetComponent<Player>();
+		if(owner) SetColor(owner.teamColor);
+		beams = GetComponentsInChildren<WeaponBeam>();
+		los = GetComponentInChildren<LOS>();
+		if(los) {
+			//we are assuming the LOS object is a plane which has a base size 10x larger than a cube
+			//we are also assuming that this is square rather than rectangular
+			float losScale = los.transform.localScale.x;
+			range = 10.0f / 2 * losScale;
+		}
 		started = true;
-		Show();
-		TurnOffWeaponBeams();
 	}
 
 	public void Pause() {
