@@ -10,6 +10,8 @@ public class UserInput : MonoBehaviour {
 	private Vector3 lastClickPosition = Resources.InvalidPosition;
 	private float distanceBetweenTwoTouches = 0.0f;
 
+	public string errorMessage = "msg";
+
 	void Start () {
 		gameManager = transform.root.GetComponent<GameManager>();
 	}
@@ -24,6 +26,12 @@ public class UserInput : MonoBehaviour {
 			handleClick = false;
 		}
 		timeSinceClickDetected += Time.deltaTime;
+	}
+
+	void OnGUI() {
+		GUI.BeginGroup(new Rect(0, 0, Screen.width, Screen.height));
+		GUI.Label(new Rect(10, Screen.height - 50, Screen.width, 40), errorMessage);
+		GUI.EndGroup();
 	}
 
 	private void ManageCamera() {
@@ -66,7 +74,7 @@ public class UserInput : MonoBehaviour {
 			detectedClickPosition = Resources.InvalidPosition;
 		}
 		if(clickDrag) {
-			Vector2 screenPosition = new Vector2(clickPosition.x, clickPosition.y);
+			Vector2 screenPosition = new Vector2(clickPosition.x, Screen.height - clickPosition.y);
 			bool movingCamera = false;
 			Vector3 movement = new Vector3(0, 0, 0);
 			if(Resources.leftZone.Contains(screenPosition)) {
@@ -95,7 +103,7 @@ public class UserInput : MonoBehaviour {
 				return;
 			}
 			if(startedPan) { //rotating camera
-				float xDrag = lastClickPosition.x - clickPosition.x;
+				float xDrag = clickPosition.x - lastClickPosition.x;
 				Camera.main.transform.RotateAround(Camera.main.transform.position, Vector3.up, xDrag * Resources.rotateSpeed * Time.deltaTime);
 				lastClickPosition = clickPosition;
 			} else {

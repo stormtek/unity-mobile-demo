@@ -79,6 +79,7 @@ public class GameManager : MonoBehaviour {
 						player.Resume();
 					}
 				}
+				if(finished) finished = false;
 				showMenu = false;
 				if(hud) hud.Begin();
 				if(userInput) userInput.enabled = true;

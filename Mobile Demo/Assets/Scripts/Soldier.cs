@@ -28,10 +28,10 @@ public class Soldier : MonoBehaviour {
 	void Update () {
 		if(!started) return;
 		if(!target && weaponBeamsOn) TurnOffWeaponBeams();
-		if(target) {
+		/*if(target) {
 			if(selected) target.Select();
 			else target.Deselect();
-		}
+		}*/
 		if(rotating) {
 			transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
 			Quaternion inverseTargetRotation = new Quaternion(-targetRotation.x,-targetRotation.y,-targetRotation.z,-targetRotation.w);
@@ -83,8 +83,8 @@ public class Soldier : MonoBehaviour {
 		}
 	}
 	
-	private bool TargetTooFarAway() {
-		if(!target) return false;
+	private bool TargetTooFarAway(Soldier target) {
+		if(!target) return true;
 		return Mathf.Abs((target.transform.position - transform.position).magnitude) > range;
 	}
 	
@@ -131,22 +131,23 @@ public class Soldier : MonoBehaviour {
 		moving = false;
 		TurnOffWeaponBeams();
 		if(target) {
-			target.Deselect();
+			//target.Deselect();
 			target = null;
 		}
 	}
 
-	public void Attack(Soldier target) {
+	public bool Attack(Soldier target) {
+		if(TargetTooFarAway(target)) return false;
+		//Debug.Log("attack target");
 		this.target = target;
-		if(TargetTooFarAway()) destination = GetAttackPosition();
-		else destination = transform.position;
+		destination = transform.position;
 		targetRotation = Quaternion.LookRotation(target.transform.position - transform.position);
 		rotating = true;
 		moving = false;
+		return true;
 	}
 
 	public void Begin() {
-
 		owner = transform.root.GetComponent<Player>();
 		if(owner) SetColor(owner.teamColor);
 		beams = GetComponentsInChildren<WeaponBeam>();

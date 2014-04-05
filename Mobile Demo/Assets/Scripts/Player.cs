@@ -10,7 +10,7 @@ public class Player : MonoBehaviour {
 
 	private SpawnPoint spawnPoint;
 	private bool started = false;
-	private Soldier selectedSoldier;
+	private Soldier selectedSoldier, selectedEnemySoldier;
 	private int teamKills = 0, teamDeaths = 0, wins = 0;
 
 	// Use this for initialization
@@ -64,24 +64,64 @@ public class Player : MonoBehaviour {
 
 	public void HandleClick(GameObject hitObject, Vector3 hitPoint) {
 		if(hitObject && hitObject.name != "Ground" && hitObject.name != "LOS") { //clicked on something that was not the ground plane
-			Soldier soldier = hitObject.transform.parent.GetComponent<Soldier>();
-			if(soldier) { //clicked on cube
-				if(selectedSoldier) { //already have cube selected
-					if(soldier != selectedSoldier) {
-						if(soldier.IsControlledBy(this)) {
-							selectedSoldier.Deselect();
-							soldier.Select();
-							selectedSoldier = soldier;
-						} else {
-							selectedSoldier.Attack(soldier);
+			Soldier clickedSoldier = hitObject.transform.parent.GetComponent<Soldier>();
+			if(clickedSoldier) { //clicked on soldier
+				if(clickedSoldier.IsControlledBy(this)) {
+					bool selectSoldier = false, deselectSoldier  = false;
+					if(selectedSoldier) { //already have soldier selected
+						if(clickedSoldier == selectedSoldier) { // clicked on selected soldier
+							if(selectedSoldier.IsSelected()) {
+								deselectSoldier = true;
+							} else {
+								selectSoldier = true;
+							}
+						} else { // clicked on another soldier
+							deselectSoldier = true;
+							selectSoldier = true;
+						}
+					} else { // no soldier selected
+						selectSoldier = true;
+					}
+					if(deselectSoldier) {
+						selectedSoldier.Deselect();
+						selectedSoldier = null;
+					}
+					if(selectSoldier) {
+						clickedSoldier.Select();
+						selectedSoldier = clickedSoldier;
+					}
+				} else {
+					bool selectEnemy = false, deselectEnemy = false;;
+					if(selectedEnemySoldier) { // already have enemy soldier selected
+						if(clickedSoldier == selectedEnemySoldier) { // clicked on selected enemy soldier
+							if(selectedEnemySoldier.IsSelected()) {
+								deselectEnemy = true;
+							} else { // 
+								selectEnemy = true;
+							}
+						} else { // clicked on another enemy soldier
+							deselectEnemy = true;
+							selectEnemy = true;
+						}
+					} else { // clicked on an enemy soldier
+						selectEnemy = true;
+					}
+					if(deselectEnemy) {
+						selectedEnemySoldier.Deselect();
+						selectedEnemySoldier = null;
+					}
+					if(selectedSoldier) {
+						if(selectedSoldier.Attack(clickedSoldier)) {
+							selectEnemy = true;
 						}
 					}
-				} else { // no cube selected
-					if(soldier.IsControlledBy(this)) {
-						soldier.Select();
-						selectedSoldier = soldier;
+					if(selectEnemy) {
+						selectedEnemySoldier = clickedSoldier;
+						selectedEnemySoldier.Select();
+
 					}
 				}
+
 			}
 		} else if(selectedSoldier) {
 			if(hitPoint != Resources.InvalidPosition) {
@@ -107,6 +147,10 @@ public class Player : MonoBehaviour {
 
 	public Soldier GetSelectedSoldier() {
 		return selectedSoldier;
+	}
+
+	public Soldier GetSelectedEnemy() {
+		return selectedEnemySoldier;
 	}
 
 	public int GetNumberOfWins() {
