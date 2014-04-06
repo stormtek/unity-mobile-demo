@@ -3,6 +3,10 @@ using System.Collections;
 
 public class Player : MonoBehaviour {
 
+	public enum State {
+		Attack, Move, Defend, None
+	}
+
 	public bool isHuman = false;
 	public string displayName = "Player";
 	public Color teamColor, selectedColor;
@@ -82,10 +86,7 @@ public class Player : MonoBehaviour {
 					} else { // no soldier selected
 						selectSoldier = true;
 					}
-					if(deselectSoldier) {
-						selectedSoldier.Deselect();
-						selectedSoldier = null;
-					}
+					if(deselectSoldier) DeselectSoldier();
 					if(selectSoldier) {
 						clickedSoldier.Select();
 						selectedSoldier = clickedSoldier;
@@ -155,5 +156,10 @@ public class Player : MonoBehaviour {
 
 	public int GetNumberOfWins() {
 		return wins;
+	}
+
+	public void DeselectSoldier() {
+		selectedSoldier.Deselect();
+		selectedSoldier = null;
 	}
 }

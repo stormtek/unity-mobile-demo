@@ -6,6 +6,10 @@ public class HUD : MonoBehaviour {
 	public GUISkin skin;
 	public Texture2D healthyTexture, damagedTexture, criticalTexture;
 	public Texture2D upArrow, downArrow, leftArrow, rightArrow;
+	public Texture2D move, moveActive, moveClick;
+	public Texture2D attack, attackActive, attackClick;
+	public Texture2D defend, defendActive, defendClick;
+	public Texture2D cancel, cancelClick;
 
 	private GameManager gameManager;
 	private Player activePlayer;
@@ -14,6 +18,8 @@ public class HUD : MonoBehaviour {
 	private GUIStyle targetStyle = new GUIStyle();
 	private GUIStyle movementStyle = new GUIStyle();
 	private GUIStyle buttonStyle = new GUIStyle();
+
+	private bool moveButtonActive = false, attackButtonActive = false, defendButtonActive = false;
 	
 	void Start () {
 		gameManager = transform.root.GetComponent<GameManager>();
@@ -65,24 +71,43 @@ public class HUD : MonoBehaviour {
 			int buttonWidth = 50;
 			int topPos = 80;
 			int leftPos = padding;
-			buttonStyle.normal.background = criticalTexture;
-			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "M", buttonStyle)) {
-
+			buttonStyle.normal.background = moveButtonActive ? moveActive : move;
+			//buttonStyle.active.background = moveClick;
+			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "", buttonStyle)) {
+				if(moveButtonActive) moveButtonActive = false;
+				else {
+					moveButtonActive = true;
+					if(attackButtonActive) attackButtonActive = false;
+					if(defendButtonActive) defendButtonActive = false;
+				}
 			}
 			topPos += padding + buttonWidth;
-			buttonStyle.normal.background = healthyTexture;
-			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "A", buttonStyle)) {
-
+			buttonStyle.normal.background = attackButtonActive ? attackActive : attack;
+			//buttonStyle.active.background = attackClick;
+			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "", buttonStyle)) {
+				if(attackButtonActive) attackButtonActive = false;
+				else {
+					attackButtonActive = true;
+					if(moveButtonActive) moveButtonActive = false;
+					if(defendButtonActive) defendButtonActive = false;
+				}
 			}
 			topPos += padding + buttonWidth;
-			buttonStyle.normal.background = damagedTexture;
-			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "D", buttonStyle)) {
-
+			buttonStyle.normal.background = defendButtonActive ? defendActive : defend;
+			//buttonStyle.active.background = defendClick;
+			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "", buttonStyle)) {
+				if(defendButtonActive) defendButtonActive = false;
+				else {
+					defendButtonActive = true;
+					if(moveButtonActive) moveButtonActive = false;
+					if(attackButtonActive) attackButtonActive = false;
+				}
 			}
 			topPos += padding + buttonWidth;
-			buttonStyle.normal.background = healthyTexture;
-			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "C", buttonStyle)) {
-				
+			buttonStyle.normal.background = cancel;
+			//buttonStyle.active.background = cancelClick;
+			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "", buttonStyle)) {
+				activePlayer.DeselectSoldier();
 			}
 		}
 		movementStyle.normal.background = upArrow;
