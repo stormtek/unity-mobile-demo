@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviour {
 	private Player activePlayer;
 	private HUD hud;
 	private UserInput userInput;
+	private SoundManager soundManager;
 	private bool started = false, finished = false, showMenu = true;
 	private string winningMessage = "";
 	private float padding = 20;
@@ -24,6 +25,7 @@ public class GameManager : MonoBehaviour {
 		if(hud) hud.SetActivePlayer(activePlayer);
 		userInput = transform.root.GetComponent<UserInput>();
 		if(userInput) userInput.enabled = false;
+		soundManager = FindObjectOfType(typeof(SoundManager)) as SoundManager;
 	}
 
 	void Update () {
@@ -68,6 +70,7 @@ public class GameManager : MonoBehaviour {
 			string startButtonText = "New Game";
 			if(started) startButtonText = "Resume";
 			if(GUI.Button(new Rect(buttonLeft, buttonTop, buttonWidth, buttonHeight), startButtonText)) {
+				if(soundManager) soundManager.PlaySound("ButtonClick");
 				Time.timeScale = 1.0f;
 				if(!started) {
 					started = true;
@@ -86,6 +89,7 @@ public class GameManager : MonoBehaviour {
 			}
 			buttonTop += buttonHeight + padding;
 			if(GUI.Button(new Rect(buttonLeft, buttonTop, buttonWidth, buttonHeight), "Exit")) {
+				if(soundManager) soundManager.PlaySound("ButtonClick");
 				Application.Quit();
 			}
 			if(finished) {
@@ -104,6 +108,7 @@ public class GameManager : MonoBehaviour {
 			float buttonLeft = Screen.width - padding - buttonWidth;
 			float buttonTop = Screen.height - padding - buttonHeight;
 			if(GUI.Button(new Rect(buttonLeft, buttonTop, buttonWidth, buttonHeight), "Menu")) {
+				if(soundManager) soundManager.PlaySound("ButtonClick");
 				Time.timeScale = 0.0f;
 				showMenu = true;
 				foreach(Player player in players) {

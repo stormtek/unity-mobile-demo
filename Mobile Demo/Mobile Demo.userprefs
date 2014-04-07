@@ -1,15 +1,11 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace />
-  <MonoDevelop.Ide.Workbench ActiveDocument="../../../Desktop/project 1 - 4.3.4 (upgrade v2)/Assets/new scripts/Avatar/ClientAvatar.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/GameManager.cs">
     <Files>
-      <File FileName="../../../Desktop/project 1 - 4.3.4 (upgrade v2)/Assets/new scripts/Manager/VideoHandler.cs" Line="54" Column="4" />
-      <File FileName="../../../Desktop/project 1 - 4.3.4 (upgrade v2)/Assets/new scripts/Manager/ProjectManager.cs" Line="1" Column="1" />
-      <File FileName="../../../Desktop/project 1 - 4.3.4 (upgrade v2)/Assets/new scripts/Camera/CameraManager.cs" Line="35" Column="50" />
-      <File FileName="../../../Desktop/project 1 - 4.3.4 (upgrade v2)/Assets/new scripts/Avatar/ClientAvatar.cs" Line="30" Column="30" />
-      <File FileName="../../../Desktop/project 1 - 4.3.4 (upgrade v2)/Assets/new scripts/Avatar/Avatar.cs" Line="100" Column="51" />
-      <File FileName="../../../Desktop/project 1 - 4.3.4 (upgrade v2)/Assets/new scripts/VideoScreen.cs" Line="27" Column="31" />
-      <File FileName="../../../Desktop/project 1 - 4.3.4 (upgrade v2)/Assets/new scripts/Manager/SceneManager.cs" Line="1" Column="1" />
-      <File FileName="../../../Desktop/project 1 - 4.3.4 (upgrade v2)/Assets/new scripts/Interactive Objects/InteractiveObject.cs" Line="1" Column="1" />
+      <File FileName="Assets/Scripts/HUD.cs" Line="110" Column="36" />
+      <File FileName="Assets/Scripts/Soldier.cs" Line="134" Column="24" />
+      <File FileName="Assets/Scripts/Player.cs" Line="89" Column="44" />
+      <File FileName="Assets/Scripts/GameManager.cs" Line="82" Column="35" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

@@ -12,6 +12,7 @@ public class HUD : MonoBehaviour {
 	public Texture2D cancel, cancelClick;
 
 	private GameManager gameManager;
+	private SoundManager soundManager;
 	private Player activePlayer;
 	private bool started = false;
 	private GUIStyle selectedStyle = new GUIStyle();
@@ -23,6 +24,7 @@ public class HUD : MonoBehaviour {
 	
 	void Start () {
 		gameManager = transform.root.GetComponent<GameManager>();
+		soundManager = FindObjectOfType(typeof(SoundManager)) as SoundManager;
 		selectedStyle.alignment = TextAnchor.MiddleLeft;
 		selectedStyle.fontSize = 30;
 		selectedStyle.normal.textColor = Color.white;
@@ -74,6 +76,7 @@ public class HUD : MonoBehaviour {
 			buttonStyle.normal.background = moveButtonActive ? moveActive : move;
 			//buttonStyle.active.background = moveClick;
 			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "", buttonStyle)) {
+				if(soundManager) soundManager.PlaySound("ActionClick");
 				if(moveButtonActive) moveButtonActive = false;
 				else {
 					moveButtonActive = true;
@@ -85,6 +88,7 @@ public class HUD : MonoBehaviour {
 			buttonStyle.normal.background = attackButtonActive ? attackActive : attack;
 			//buttonStyle.active.background = attackClick;
 			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "", buttonStyle)) {
+				if(soundManager) soundManager.PlaySound("ActionClick");
 				if(attackButtonActive) attackButtonActive = false;
 				else {
 					attackButtonActive = true;
@@ -96,6 +100,7 @@ public class HUD : MonoBehaviour {
 			buttonStyle.normal.background = defendButtonActive ? defendActive : defend;
 			//buttonStyle.active.background = defendClick;
 			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "", buttonStyle)) {
+				if(soundManager) soundManager.PlaySound("ActionClick");
 				if(defendButtonActive) defendButtonActive = false;
 				else {
 					defendButtonActive = true;
@@ -107,6 +112,7 @@ public class HUD : MonoBehaviour {
 			buttonStyle.normal.background = cancel;
 			//buttonStyle.active.background = cancelClick;
 			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "", buttonStyle)) {
+				if(soundManager) soundManager.PlaySound("ActionClick");
 				activePlayer.DeselectSoldier();
 			}
 		}
