@@ -112,7 +112,7 @@ public class HUD : MonoBehaviour {
 			buttonStyle.normal.background = cancel;
 			//buttonStyle.active.background = cancelClick;
 			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "", buttonStyle)) {
-				if(soundManager) soundManager.PlaySound("ActionClick");
+				if(soundManager) soundManager.PlaySound("CancelClick");
 				activePlayer.DeselectSoldier();
 			}
 		}

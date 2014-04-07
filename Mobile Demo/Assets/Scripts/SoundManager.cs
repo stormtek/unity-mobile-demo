@@ -17,11 +17,16 @@ public class SoundManager : MonoBehaviour {
 	}
 
 	public void PlaySound(string soundName) {
-		if(soundClips.ContainsKey(soundName)) {
-			AudioSource sound;
-			if(soundClips.TryGetValue(soundName, out sound)) {
-				sound.Play();
-			}
+		AudioSource sound;
+		if(soundClips.TryGetValue(soundName, out sound)) {
+			if(!sound.isPlaying) sound.Play();
+		}
+	}
+
+	public void StopSound(string soundName) {
+		AudioSource sound;
+		if(soundClips.TryGetValue(soundName, out sound)) {
+			sound.Stop();
 		}
 	}
 }

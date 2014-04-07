@@ -38,12 +38,14 @@ public class Soldier : MonoBehaviour {
 			if(transform.rotation == targetRotation || transform.rotation == inverseTargetRotation) {
 				rotating = false;
 				moving = true;
+				if(owner) owner.PlaySound("Footsteps");
 			}
 		} else if(moving) {
 			transform.position = Vector3.MoveTowards(transform.position, destination, moveSpeed * Time.deltaTime);
 			if(transform.position == destination) {
 				destination = Resources.InvalidPosition;
 				moving = false;
+				if(owner) owner.StopSound("Footsteps");
 			}
 		} else if(target) {
 			MakeAttack();
@@ -97,10 +99,14 @@ public class Soldier : MonoBehaviour {
 	}
 	
 	private void MakeAttack() {
+		if(owner) owner.PlaySound("Attack");
 		TurnOnWeaponBeams();
 		if(target.Damage(weaponDamage)) {
 			numKills += 1;
-			if(owner) owner.AddKill();
+			if(owner) {
+				owner.AddKill();
+				owner.StopSound("Attack");
+			}
 		}
 	}
 
@@ -129,10 +135,12 @@ public class Soldier : MonoBehaviour {
 		targetRotation = Quaternion.LookRotation(destination - transform.position);
 		rotating = true;
 		moving = false;
+		if(owner) owner.StopSound("Footsteps");
 		TurnOffWeaponBeams();
 		if(target) {
 			//target.Deselect();
 			target = null;
+			if(owner) owner.StopSound("Attack");
 		}
 	}
 
@@ -144,6 +152,7 @@ public class Soldier : MonoBehaviour {
 		targetRotation = Quaternion.LookRotation(target.transform.position - transform.position);
 		rotating = true;
 		moving = false;
+		owner.StopSound("Footsteps");
 		return true;
 	}
 

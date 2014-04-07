@@ -16,10 +16,12 @@ public class Player : MonoBehaviour {
 	private bool started = false;
 	private Soldier selectedSoldier, selectedEnemySoldier;
 	private int teamKills = 0, teamDeaths = 0, wins = 0;
+	private SoundManager soundManager;
 
 	// Use this for initialization
 	void Start () {
 		spawnPoint = GetComponentInChildren<SpawnPoint>();
+		soundManager = FindObjectOfType(typeof(SoundManager)) as SoundManager;
 	}
 	
 	// Update is called once per frame
@@ -161,5 +163,13 @@ public class Player : MonoBehaviour {
 	public void DeselectSoldier() {
 		selectedSoldier.Deselect();
 		selectedSoldier = null;
+	}
+
+	public void PlaySound(string soundName) {
+		if(soundManager) soundManager.PlaySound(soundName);
+	}
+
+	public void StopSound(string soundName) {
+		if(soundManager) soundManager.StopSound(soundName);
 	}
 }
