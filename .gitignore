@@ -1,0 +1,6 @@
+*.meta
+Mobile Demo/Library/metadata/*
+Mobile Demo/Library/AssetVersioning.db
+Mobile Demo/Library/ScriptAssemblies
+Mobile Demo/Library/expandedItems
+Mobile Demo/Temp
