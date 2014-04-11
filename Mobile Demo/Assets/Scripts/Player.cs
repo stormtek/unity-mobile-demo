@@ -78,7 +78,8 @@ public class Player : MonoBehaviour {
 					if(selectedSoldier) { //already have soldier selected
 						if(clickedSoldier == selectedSoldier) { // clicked on selected soldier
 							if(currentState == State.Defend) {
-								Debug.Log("tell selected soldier to enter defense mode for a turn");
+								selectedSoldier.Defend();
+								deselectSoldier = true;
 							} else {
 								if(selectedSoldier.IsSelected()) {
 									deselectSoldier = true;
@@ -98,7 +99,8 @@ public class Player : MonoBehaviour {
 						clickedSoldier.Select();
 						selectedSoldier = clickedSoldier;
 						if(currentState == State.Defend) {
-							Debug.Log("Tell newly selected soldier to enter defense mode for a turn");
+							selectedSoldier.Defend();
+							DeselectSoldier();
 						}
 					}
 				} else { // soldier is controlled by another player

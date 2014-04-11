@@ -9,6 +9,7 @@ public class Soldier : MonoBehaviour {
 
 	private Player owner;
 	private WeaponBeam[] beams;
+	private Shield shield;
 	private LOS los;
 	private bool started = false, weaponBeamsOn = false;
 	private bool selected = false, moving = false, rotating = false;
@@ -83,6 +84,14 @@ public class Soldier : MonoBehaviour {
 		foreach(WeaponBeam beam in beams) {
 			beam.transform.renderer.enabled = false;
 		}
+	}
+
+	private void ShowShield() {
+		if(shield) shield.transform.renderer.enabled = true;
+	}
+
+	private void HideShield() {
+		if(shield) shield.transform.renderer.enabled = false;
 	}
 	
 	private bool TargetTooFarAway(Soldier target) {
@@ -160,6 +169,7 @@ public class Soldier : MonoBehaviour {
 		owner = transform.root.GetComponent<Player>();
 		if(owner) SetColor(owner.teamColor);
 		beams = GetComponentsInChildren<WeaponBeam>();
+		shield = GetComponentInChildren<Shield>();
 		los = GetComponentInChildren<LOS>();
 		if(los) {
 			//we are assuming the LOS object is a plane which has a base size 10x larger than a cube
@@ -191,6 +201,10 @@ public class Soldier : MonoBehaviour {
 			return true;
 		}
 		return false;
+	}
+
+	public void Defend() {
+		ShowShield();
 	}
 
 	public Soldier GetTarget() {
