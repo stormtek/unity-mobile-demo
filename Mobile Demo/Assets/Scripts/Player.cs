@@ -17,6 +17,7 @@ public class Player : MonoBehaviour {
 	private Soldier selectedSoldier, selectedEnemySoldier;
 	private int teamKills = 0, teamDeaths = 0, wins = 0;
 	private SoundManager soundManager;
+	private State currentState = State.None;
 
 	// Use this for initialization
 	void Start () {
@@ -171,5 +172,18 @@ public class Player : MonoBehaviour {
 
 	public void StopSound(string soundName) {
 		if(soundManager) soundManager.StopSound(soundName);
+	}
+
+	public string GetDisplayName() {
+		if(currentState == State.None) return displayName;
+		else return displayName + " (" + currentState + ")";
+	}
+
+	public void SetState(State newState) {
+		currentState = newState;
+	}
+
+	public State GetState() {
+		return currentState;
 	}
 }

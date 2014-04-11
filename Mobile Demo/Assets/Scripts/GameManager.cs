@@ -117,6 +117,9 @@ public class GameManager : MonoBehaviour {
 				if(hud) hud.Pause();
 				if(userInput) userInput.enabled = false;
 			}
+			float labelWidth = 500;
+			buttonLeft = buttonLeft - labelWidth - padding;
+			GUI.Label(new Rect(buttonLeft, buttonTop, labelWidth, buttonHeight), activePlayer.GetDisplayName());
 		}
 		GUI.EndGroup();
 

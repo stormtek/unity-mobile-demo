@@ -6,10 +6,10 @@ public class HUD : MonoBehaviour {
 	public GUISkin skin;
 	public Texture2D healthyTexture, damagedTexture, criticalTexture;
 	public Texture2D upArrow, downArrow, leftArrow, rightArrow;
-	public Texture2D move, moveActive, moveClick;
-	public Texture2D attack, attackActive, attackClick;
-	public Texture2D defend, defendActive, defendClick;
-	public Texture2D cancel, cancelClick;
+	public Texture2D move, moveActive;
+	public Texture2D attack, attackActive;
+	public Texture2D defend, defendActive;
+	public Texture2D cancel;
 
 	private GameManager gameManager;
 	private SoundManager soundManager;
@@ -44,7 +44,6 @@ public class HUD : MonoBehaviour {
 			selectedStyle.padding.top = 0;
 			GUI.Label(new Rect(10, 30, Screen.width / 2 - 10, 40), currentSelection.GetDisplayName(), selectedStyle);
 		}
-			//Soldier currentTarget = currentSelection.GetTarget();
 		if(currentTarget) {
 			targetStyle.normal.background = null;
 			targetStyle.padding.top = 0;
@@ -74,7 +73,6 @@ public class HUD : MonoBehaviour {
 			int topPos = 80;
 			int leftPos = padding;
 			buttonStyle.normal.background = moveButtonActive ? moveActive : move;
-			//buttonStyle.active.background = moveClick;
 			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "", buttonStyle)) {
 				if(soundManager) soundManager.PlaySound("ActionClick");
 				if(moveButtonActive) moveButtonActive = false;
@@ -82,11 +80,11 @@ public class HUD : MonoBehaviour {
 					moveButtonActive = true;
 					if(attackButtonActive) attackButtonActive = false;
 					if(defendButtonActive) defendButtonActive = false;
+					if(activePlayer) activePlayer.SetState(Player.State.Move);
 				}
 			}
 			topPos += padding + buttonWidth;
 			buttonStyle.normal.background = attackButtonActive ? attackActive : attack;
-			//buttonStyle.active.background = attackClick;
 			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "", buttonStyle)) {
 				if(soundManager) soundManager.PlaySound("ActionClick");
 				if(attackButtonActive) attackButtonActive = false;
@@ -94,11 +92,11 @@ public class HUD : MonoBehaviour {
 					attackButtonActive = true;
 					if(moveButtonActive) moveButtonActive = false;
 					if(defendButtonActive) defendButtonActive = false;
+					if(activePlayer) activePlayer.SetState(Player.State.Attack);
 				}
 			}
 			topPos += padding + buttonWidth;
 			buttonStyle.normal.background = defendButtonActive ? defendActive : defend;
-			//buttonStyle.active.background = defendClick;
 			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "", buttonStyle)) {
 				if(soundManager) soundManager.PlaySound("ActionClick");
 				if(defendButtonActive) defendButtonActive = false;
@@ -106,15 +104,23 @@ public class HUD : MonoBehaviour {
 					defendButtonActive = true;
 					if(moveButtonActive) moveButtonActive = false;
 					if(attackButtonActive) attackButtonActive = false;
+					if(activePlayer) activePlayer.SetState(Player.State.Defend);
 				}
 			}
 			topPos += padding + buttonWidth;
 			buttonStyle.normal.background = cancel;
-			//buttonStyle.active.background = cancelClick;
 			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "", buttonStyle)) {
 				if(soundManager) soundManager.PlaySound("CancelClick");
-				activePlayer.DeselectSoldier();
+				if(activePlayer) {
+					activePlayer.DeselectSoldier();
+					activePlayer.SetState(Player.State.None);
+				}
 			}
+		} else {
+			moveButtonActive = false;
+			attackButtonActive = false;
+			defendButtonActive = false;
+			if(activePlayer) activePlayer.SetState(Player.State.None);
 		}
 		movementStyle.normal.background = upArrow;
 		GUI.Box(Resources.topZone, "", movementStyle);
