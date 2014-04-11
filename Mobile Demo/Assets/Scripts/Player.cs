@@ -73,14 +73,18 @@ public class Player : MonoBehaviour {
 		if(hitObject && hitObject.name != "Ground" && hitObject.name != "LOS") { //clicked on something that was not the ground plane
 			Soldier clickedSoldier = hitObject.transform.parent.GetComponent<Soldier>();
 			if(clickedSoldier) { //clicked on soldier
-				if(clickedSoldier.IsControlledBy(this)) {
+				if(clickedSoldier.IsControlledBy(this)) { // soldier is controlled by player
 					bool selectSoldier = false, deselectSoldier  = false;
 					if(selectedSoldier) { //already have soldier selected
 						if(clickedSoldier == selectedSoldier) { // clicked on selected soldier
-							if(selectedSoldier.IsSelected()) {
-								deselectSoldier = true;
+							if(currentState == State.Defend) {
+								Debug.Log("tell selected soldier to enter defense mode for a turn");
 							} else {
-								selectSoldier = true;
+								if(selectedSoldier.IsSelected()) {
+									deselectSoldier = true;
+								} else {
+									selectSoldier = true;
+								}
 							}
 						} else { // clicked on another soldier
 							deselectSoldier = true;
@@ -93,8 +97,11 @@ public class Player : MonoBehaviour {
 					if(selectSoldier) {
 						clickedSoldier.Select();
 						selectedSoldier = clickedSoldier;
+						if(currentState == State.Defend) {
+							Debug.Log("Tell newly selected soldier to enter defense mode for a turn");
+						}
 					}
-				} else {
+				} else { // soldier is controlled by another player
 					bool selectEnemy = false, deselectEnemy = false;;
 					if(selectedEnemySoldier) { // already have enemy soldier selected
 						if(clickedSoldier == selectedEnemySoldier) { // clicked on selected enemy soldier
@@ -115,8 +122,12 @@ public class Player : MonoBehaviour {
 						selectedEnemySoldier = null;
 					}
 					if(selectedSoldier) {
-						if(selectedSoldier.Attack(clickedSoldier)) {
-							selectEnemy = true;
+						if(currentState == State.Attack) {
+							if(selectedSoldier.Attack(clickedSoldier)) {
+								selectEnemy = true;
+							}
+						} else {
+							//prompt user to click on attack first somehow?
 						}
 					}
 					if(selectEnemy) {
@@ -129,9 +140,13 @@ public class Player : MonoBehaviour {
 			}
 		} else if(selectedSoldier) {
 			if(hitPoint != Resources.InvalidPosition) {
-				float distance = Vector3.Distance(hitPoint, selectedSoldier.transform.position);
-				if(distance < selectedSoldier.getRange()) {
-					selectedSoldier.SetDestination(new Vector3(hitPoint.x, 0, hitPoint.z));
+				if(currentState == State.Move) {
+					float distance = Vector3.Distance(hitPoint, selectedSoldier.transform.position);
+					if(distance < selectedSoldier.getRange()) {
+						selectedSoldier.SetDestination(new Vector3(hitPoint.x, 0, hitPoint.z));
+					}
+				} else {
+					// prompt user to click on move first somehow?
 				}
 			}
 		}
@@ -164,6 +179,7 @@ public class Player : MonoBehaviour {
 	public void DeselectSoldier() {
 		selectedSoldier.Deselect();
 		selectedSoldier = null;
+		if(currentState != State.Defend) currentState = State.None;
 	}
 
 	public void PlaySound(string soundName) {

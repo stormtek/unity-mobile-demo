@@ -11,7 +11,6 @@ public class HUD : MonoBehaviour {
 	public Texture2D defend, defendActive;
 	public Texture2D cancel;
 
-	private GameManager gameManager;
 	private SoundManager soundManager;
 	private Player activePlayer;
 	private bool started = false;
@@ -23,7 +22,6 @@ public class HUD : MonoBehaviour {
 	private bool moveButtonActive = false, attackButtonActive = false, defendButtonActive = false;
 	
 	void Start () {
-		gameManager = transform.root.GetComponent<GameManager>();
 		soundManager = FindObjectOfType(typeof(SoundManager)) as SoundManager;
 		selectedStyle.alignment = TextAnchor.MiddleLeft;
 		selectedStyle.fontSize = 30;
@@ -75,8 +73,10 @@ public class HUD : MonoBehaviour {
 			buttonStyle.normal.background = moveButtonActive ? moveActive : move;
 			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "", buttonStyle)) {
 				if(soundManager) soundManager.PlaySound("ActionClick");
-				if(moveButtonActive) moveButtonActive = false;
-				else {
+				if(moveButtonActive) {
+					moveButtonActive = false;
+					if(activePlayer) activePlayer.SetState(Player.State.None);
+				} else {
 					moveButtonActive = true;
 					if(attackButtonActive) attackButtonActive = false;
 					if(defendButtonActive) defendButtonActive = false;
@@ -87,8 +87,10 @@ public class HUD : MonoBehaviour {
 			buttonStyle.normal.background = attackButtonActive ? attackActive : attack;
 			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "", buttonStyle)) {
 				if(soundManager) soundManager.PlaySound("ActionClick");
-				if(attackButtonActive) attackButtonActive = false;
-				else {
+				if(attackButtonActive) {
+					attackButtonActive = false;
+					if(activePlayer) activePlayer.SetState(Player.State.None);
+				} else {
 					attackButtonActive = true;
 					if(moveButtonActive) moveButtonActive = false;
 					if(defendButtonActive) defendButtonActive = false;
@@ -99,8 +101,10 @@ public class HUD : MonoBehaviour {
 			buttonStyle.normal.background = defendButtonActive ? defendActive : defend;
 			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "", buttonStyle)) {
 				if(soundManager) soundManager.PlaySound("ActionClick");
-				if(defendButtonActive) defendButtonActive = false;
-				else {
+				if(defendButtonActive) {
+					defendButtonActive = false;
+					if(activePlayer) activePlayer.SetState(Player.State.None);
+				} else {
 					defendButtonActive = true;
 					if(moveButtonActive) moveButtonActive = false;
 					if(attackButtonActive) attackButtonActive = false;
