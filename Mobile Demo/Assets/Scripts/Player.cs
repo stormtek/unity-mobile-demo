@@ -204,4 +204,16 @@ public class Player : MonoBehaviour {
 	public State GetState() {
 		return currentState;
 	}
+
+	public void StartTurn() {
+
+	}
+
+	public void EndTurn() {
+
+	}
+
+	public bool NoMovesLeft() {
+		return false;
+	}
 }

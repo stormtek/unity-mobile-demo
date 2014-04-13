@@ -57,6 +57,7 @@
      <Compile Include="Assets\Scripts\SoundManager.cs" />
      <Compile Include="Assets\Scripts\SpawnPoint.cs" />
      <Compile Include="Assets\Scripts\SpawnPosition.cs" />
+     <Compile Include="Assets\Scripts\TurnManager.cs" />
      <Compile Include="Assets\Scripts\UserInput.cs" />
      <Compile Include="Assets\Scripts\WeaponBeam.cs" />
   </ItemGroup>

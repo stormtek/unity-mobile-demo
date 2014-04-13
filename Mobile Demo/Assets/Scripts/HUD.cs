@@ -12,7 +12,7 @@ public class HUD : MonoBehaviour {
 	public Texture2D cancel;
 
 	private SoundManager soundManager;
-	private Player activePlayer;
+	private Player humanPlayer;
 	private bool started = false;
 	private GUIStyle selectedStyle = new GUIStyle();
 	private GUIStyle targetStyle = new GUIStyle();
@@ -32,22 +32,25 @@ public class HUD : MonoBehaviour {
 	}
 
 	void OnGUI() {
-		if(!activePlayer || !started) return;
+		if(!humanPlayer || !started) return;
 		GUI.skin = skin;
 		GUI.BeginGroup(new Rect(0, 0, Screen.width, Screen.height));
-		Soldier currentSelection = activePlayer.GetSelectedSoldier();
-		Soldier currentTarget = activePlayer.GetSelectedEnemy();
+		Soldier currentSelection = humanPlayer.GetSelectedSoldier();
+		Soldier currentTarget = humanPlayer.GetSelectedEnemy();
+		// display name for the selected soldier belonging to the human player
 		if(currentSelection) {
 			selectedStyle.normal.background = null;
 			selectedStyle.padding.top = 0;
 			GUI.Label(new Rect(10, 30, Screen.width / 2 - 10, 40), currentSelection.GetDisplayName(), selectedStyle);
 		}
+		// display name for the selected soldier belonging to another player (enemy)
 		if(currentTarget) {
 			targetStyle.normal.background = null;
 			targetStyle.padding.top = 0;
 			GUI.Label(new Rect(Screen.width / 2, 30, Screen.width / 2 - 10, 40), currentTarget.GetDisplayName(), targetStyle);
 		}
 		float healthPercentage = 0.0f;
+		// display health bar for the selected soldier belonging to the human player
 		if(currentSelection) {
 			healthPercentage = currentSelection.GetHealthPercentage();
 			if(healthPercentage > Resources.highSplit) selectedStyle.normal.background = healthyTexture;
@@ -56,6 +59,7 @@ public class HUD : MonoBehaviour {
 			selectedStyle.padding.top = -20;
 			GUI.Label(new Rect(10, 10, 300 * healthPercentage, 20), "", selectedStyle);
 		}
+		// display health bar for the selected soldier belonging to another player (enemy)
 		if(currentTarget) {
 			healthPercentage = currentTarget.GetHealthPercentage();
 			if(healthPercentage > Resources.highSplit) targetStyle.normal.background = healthyTexture;
@@ -65,67 +69,73 @@ public class HUD : MonoBehaviour {
 			float targetHealthWidth = 300 * healthPercentage;
 			GUI.Label(new Rect(Screen.width - targetHealthWidth - 10, 10, targetHealthWidth, 20), "", targetStyle);
 		}
+		// display options buttons for the selected soldier
 		if(currentSelection) {
 			int padding = 20;
 			int buttonWidth = 50;
 			int topPos = 80;
 			int leftPos = padding;
+			// move
 			buttonStyle.normal.background = moveButtonActive ? moveActive : move;
 			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "", buttonStyle)) {
 				if(soundManager) soundManager.PlaySound("ActionClick");
 				if(moveButtonActive) {
 					moveButtonActive = false;
-					if(activePlayer) activePlayer.SetState(Player.State.None);
+					if(humanPlayer) humanPlayer.SetState(Player.State.None);
 				} else {
 					moveButtonActive = true;
 					if(attackButtonActive) attackButtonActive = false;
 					if(defendButtonActive) defendButtonActive = false;
-					if(activePlayer) activePlayer.SetState(Player.State.Move);
+					if(humanPlayer) humanPlayer.SetState(Player.State.Move);
 				}
 			}
 			topPos += padding + buttonWidth;
+			// attack
 			buttonStyle.normal.background = attackButtonActive ? attackActive : attack;
 			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "", buttonStyle)) {
 				if(soundManager) soundManager.PlaySound("ActionClick");
 				if(attackButtonActive) {
 					attackButtonActive = false;
-					if(activePlayer) activePlayer.SetState(Player.State.None);
+					if(humanPlayer) humanPlayer.SetState(Player.State.None);
 				} else {
 					attackButtonActive = true;
 					if(moveButtonActive) moveButtonActive = false;
 					if(defendButtonActive) defendButtonActive = false;
-					if(activePlayer) activePlayer.SetState(Player.State.Attack);
+					if(humanPlayer) humanPlayer.SetState(Player.State.Attack);
 				}
 			}
 			topPos += padding + buttonWidth;
+			// defend
 			buttonStyle.normal.background = defendButtonActive ? defendActive : defend;
 			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "", buttonStyle)) {
 				if(soundManager) soundManager.PlaySound("ActionClick");
 				if(defendButtonActive) {
 					defendButtonActive = false;
-					if(activePlayer) activePlayer.SetState(Player.State.None);
+					if(humanPlayer) humanPlayer.SetState(Player.State.None);
 				} else {
 					defendButtonActive = true;
 					if(moveButtonActive) moveButtonActive = false;
 					if(attackButtonActive) attackButtonActive = false;
-					if(activePlayer) activePlayer.SetState(Player.State.Defend);
+					if(humanPlayer) humanPlayer.SetState(Player.State.Defend);
 				}
 			}
 			topPos += padding + buttonWidth;
+			// cancel
 			buttonStyle.normal.background = cancel;
 			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "", buttonStyle)) {
 				if(soundManager) soundManager.PlaySound("CancelClick");
-				if(activePlayer) {
-					activePlayer.DeselectSoldier();
-					activePlayer.SetState(Player.State.None);
+				if(humanPlayer) {
+					humanPlayer.DeselectSoldier();
+					humanPlayer.SetState(Player.State.None);
 				}
 			}
 		} else {
 			moveButtonActive = false;
 			attackButtonActive = false;
 			defendButtonActive = false;
-			if(activePlayer) activePlayer.SetState(Player.State.None);
+			if(humanPlayer) humanPlayer.SetState(Player.State.None);
 		}
+		// display the movement control
 		movementStyle.normal.background = upArrow;
 		GUI.Box(Resources.topZone, "", movementStyle);
 		movementStyle.normal.background = downArrow;
@@ -137,8 +147,8 @@ public class HUD : MonoBehaviour {
 		GUI.EndGroup();
 	}
 
-	public void SetActivePlayer(Player player) {
-		activePlayer = player;
+	public void SetHumanPlayer(Player player) {
+		humanPlayer = player;
 	}
 
 	public void Begin() {
