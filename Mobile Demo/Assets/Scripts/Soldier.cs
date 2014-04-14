@@ -30,10 +30,6 @@ public class Soldier : MonoBehaviour {
 	void Update () {
 		if(!started) return;
 		if(!target && weaponBeamsOn) TurnOffWeaponBeams();
-		/*if(target) {
-			if(selected) target.Select();
-			else target.Deselect();
-		}*/
 		if(rotating) {
 			transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
 			Quaternion inverseTargetRotation = new Quaternion(-targetRotation.x,-targetRotation.y,-targetRotation.z,-targetRotation.w);
@@ -48,7 +44,7 @@ public class Soldier : MonoBehaviour {
 				destination = Resources.InvalidPosition;
 				moving = false;
 				if(owner) owner.StopSound("Footsteps");
-				currentlyActive = false;
+				if(!target) currentlyActive = false;
 			}
 		} else if(target) {
 			MakeAttack();
@@ -117,8 +113,8 @@ public class Soldier : MonoBehaviour {
 			if(owner) {
 				owner.AddKill();
 				owner.StopSound("Attack");
-				currentlyActive = false;
 			}
+			currentlyActive = false;
 		}
 	}
 

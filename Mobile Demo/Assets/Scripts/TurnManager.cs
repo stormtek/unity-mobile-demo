@@ -12,7 +12,6 @@ public class TurnManager : MonoBehaviour {
 		if(started && players != null && activePlayerIndex >= 0) {
 			Player activePlayer = players[activePlayerIndex];
 			if(activePlayer.NoMovesLeft()) {
-				Debug.Log("no moves left");
 				activePlayer.EndTurn();
 				activePlayerIndex = (activePlayerIndex + 1) % players.Length;
 				players[activePlayerIndex].StartTurn();
@@ -25,6 +24,7 @@ public class TurnManager : MonoBehaviour {
 	}
 
 	public void Begin() {
+		if(players.Length <= 0) return;
 		started = true;
 		bool setPlayer = false;
 		for(int i=0; i<players.Length; i++) {
@@ -34,6 +34,7 @@ public class TurnManager : MonoBehaviour {
 			}
 		}
 		if(!setPlayer) activePlayerIndex = 0;
+		players[activePlayerIndex].StartTurn();
 	}
 
 	public void Pause() {

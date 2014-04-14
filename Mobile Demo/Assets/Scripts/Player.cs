@@ -18,8 +18,10 @@ public class Player : MonoBehaviour {
 	private int teamKills = 0, teamDeaths = 0, wins = 0;
 	private SoundManager soundManager;
 	private State currentState = State.None;
-	private int numMoves = 5;
+	private int numMoves = 0;
 	private bool makingMove = false;
+
+	private AI aiController;
 
 	// Use this for initialization
 	void Start () {
@@ -29,6 +31,10 @@ public class Player : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		if(!started) return;
+		if(!isHuman && aiController != null && !NoMovesLeft() && !makingMove) {
+			aiController.ChooseAndMakeMove();
+		}
 		if(makingMove) MakeMove();
 	}
 
@@ -36,11 +42,15 @@ public class Player : MonoBehaviour {
 		Soldier[] existingSoldiers = GetComponentsInChildren<Soldier>();
 		foreach(Soldier oldSoldier in existingSoldiers) Destroy(oldSoldier);
 		SpawnPosition[] points = spawnPoint.GetComponentsInChildren<SpawnPosition>();
-		foreach(SpawnPosition position in points) {
+		Soldier[] newSoldiers = new Soldier[points.Length];
+		for(int i=0; i<points.Length; i++) {
+			SpawnPosition position = points[i];
 			Soldier newSoldier = (Soldier)Instantiate(soldier, position.transform.position, position.transform.rotation);
 			newSoldier.transform.parent = this.transform;
 			newSoldier.Begin();
+			newSoldiers[i] = newSoldier;
 		}
+		if(!isHuman) aiController = new AI(this, newSoldiers);
 		started = true;
 	}
 
@@ -81,7 +91,7 @@ public class Player : MonoBehaviour {
 						if(clickedSoldier == selectedSoldier) { // clicked on selected soldier
 							if(currentState == State.Defend) {
 								selectedSoldier.Defend();
-								MakeMove();
+								StartMove(selectedSoldier);
 								deselectSoldier = true;
 							} else {
 								if(selectedSoldier.IsSelected()) {
@@ -103,7 +113,7 @@ public class Player : MonoBehaviour {
 						selectedSoldier = clickedSoldier;
 						if(currentState == State.Defend) {
 							selectedSoldier.Defend();
-							MakeMove();
+							StartMove(selectedSoldier);
 							DeselectSoldier();
 						}
 					}
@@ -131,7 +141,7 @@ public class Player : MonoBehaviour {
 						if(currentState == State.Attack) {
 							if(selectedSoldier.Attack(clickedSoldier)) {
 								selectEnemy = true;
-								MakeMove();
+								StartMove(selectedSoldier);
 							}
 						} else {
 							//prompt user to click on attack first somehow?
@@ -151,7 +161,7 @@ public class Player : MonoBehaviour {
 					float distance = Vector3.Distance(hitPoint, selectedSoldier.transform.position);
 					if(distance < selectedSoldier.GetRange()) {
 						selectedSoldier.SetDestination(new Vector3(hitPoint.x, 0, hitPoint.z));
-						MakeMove();
+						StartMove(selectedSoldier);
 					}
 				} else {
 					// prompt user to click on move first somehow?
@@ -161,15 +171,19 @@ public class Player : MonoBehaviour {
 	}
 
 	private void MakeMove() {
-		if(!makingMove) {
-			makingMove = true;
-			currentState = State.None;
-			activeSoldier = selectedSoldier;
-		}
+		// do nothing until the active soldier is finished, then end the move
 		if(!activeSoldier.IsActive()) {
 			numMoves--;
 			makingMove = false;
 			activeSoldier = null;
+		}
+	}
+
+	public void StartMove(Soldier soldier) {
+		if(!makingMove) {
+			makingMove = true;
+			currentState = State.None;
+			activeSoldier = soldier;
 		}
 	}
 
@@ -183,6 +197,10 @@ public class Player : MonoBehaviour {
 
 	public void AddDeath() {
 		teamDeaths++;
+		if(!isHuman && aiController != null) {
+			Soldier[] soldiers = GetComponentsInChildren<Soldier>();
+			aiController.UpdateSoldiers(soldiers);
+		}
 	}
 
 	public void AddWin() {
@@ -230,7 +248,7 @@ public class Player : MonoBehaviour {
 
 	public void StartTurn() {
 		//this should be retrieved from TurnManager? GameManager? one of these anyway ...
-		numMoves = 5;
+		numMoves = 1;
 	}
 
 	public void EndTurn() {
@@ -238,6 +256,6 @@ public class Player : MonoBehaviour {
 	}
 
 	public bool NoMovesLeft() {
-		return numMoves == 0;
+		return numMoves == 0 && !makingMove;
 	}
 }
