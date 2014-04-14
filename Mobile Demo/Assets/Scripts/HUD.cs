@@ -70,7 +70,7 @@ public class HUD : MonoBehaviour {
 			GUI.Label(new Rect(Screen.width - targetHealthWidth - 10, 10, targetHealthWidth, 20), "", targetStyle);
 		}
 		// display options buttons for the selected soldier
-		if(currentSelection) {
+		if(currentSelection && !humanPlayer.NoMovesLeft() && !humanPlayer.MakingMove()) {
 			int padding = 20;
 			int buttonWidth = 50;
 			int topPos = 80;

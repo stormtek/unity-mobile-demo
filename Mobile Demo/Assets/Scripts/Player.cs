@@ -14,10 +14,12 @@ public class Player : MonoBehaviour {
 
 	private SpawnPoint spawnPoint;
 	private bool started = false;
-	private Soldier selectedSoldier, selectedEnemySoldier;
+	private Soldier selectedSoldier, selectedEnemySoldier, activeSoldier;
 	private int teamKills = 0, teamDeaths = 0, wins = 0;
 	private SoundManager soundManager;
 	private State currentState = State.None;
+	private int numMoves = 5;
+	private bool makingMove = false;
 
 	// Use this for initialization
 	void Start () {
@@ -27,7 +29,7 @@ public class Player : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		
+		if(makingMove) MakeMove();
 	}
 
 	public void Begin() {
@@ -79,6 +81,7 @@ public class Player : MonoBehaviour {
 						if(clickedSoldier == selectedSoldier) { // clicked on selected soldier
 							if(currentState == State.Defend) {
 								selectedSoldier.Defend();
+								MakeMove();
 								deselectSoldier = true;
 							} else {
 								if(selectedSoldier.IsSelected()) {
@@ -100,6 +103,7 @@ public class Player : MonoBehaviour {
 						selectedSoldier = clickedSoldier;
 						if(currentState == State.Defend) {
 							selectedSoldier.Defend();
+							MakeMove();
 							DeselectSoldier();
 						}
 					}
@@ -127,6 +131,7 @@ public class Player : MonoBehaviour {
 						if(currentState == State.Attack) {
 							if(selectedSoldier.Attack(clickedSoldier)) {
 								selectEnemy = true;
+								MakeMove();
 							}
 						} else {
 							//prompt user to click on attack first somehow?
@@ -144,14 +149,32 @@ public class Player : MonoBehaviour {
 			if(hitPoint != Resources.InvalidPosition) {
 				if(currentState == State.Move) {
 					float distance = Vector3.Distance(hitPoint, selectedSoldier.transform.position);
-					if(distance < selectedSoldier.getRange()) {
+					if(distance < selectedSoldier.GetRange()) {
 						selectedSoldier.SetDestination(new Vector3(hitPoint.x, 0, hitPoint.z));
+						MakeMove();
 					}
 				} else {
 					// prompt user to click on move first somehow?
 				}
 			}
 		}
+	}
+
+	private void MakeMove() {
+		if(!makingMove) {
+			makingMove = true;
+			currentState = State.None;
+			activeSoldier = selectedSoldier;
+		}
+		if(!activeSoldier.IsActive()) {
+			numMoves--;
+			makingMove = false;
+			activeSoldier = null;
+		}
+	}
+
+	public bool MakingMove() {
+		return makingMove;
 	}
 
 	public void AddKill() {
@@ -206,14 +229,15 @@ public class Player : MonoBehaviour {
 	}
 
 	public void StartTurn() {
-
+		//this should be retrieved from TurnManager? GameManager? one of these anyway ...
+		numMoves = 5;
 	}
 
 	public void EndTurn() {
-
+		currentState = State.None;
 	}
 
 	public bool NoMovesLeft() {
-		return false;
+		return numMoves == 0;
 	}
 }

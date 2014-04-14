@@ -19,6 +19,7 @@ public class Soldier : MonoBehaviour {
 	private float healthPoints = 100, maxHealthPoints = 100;
 	private int numKills = 0;
 	private float range = 0.0f;
+	private bool currentlyActive = false;
 
 	// Use this for initialization
 	void Start () {
@@ -47,6 +48,7 @@ public class Soldier : MonoBehaviour {
 				destination = Resources.InvalidPosition;
 				moving = false;
 				if(owner) owner.StopSound("Footsteps");
+				currentlyActive = false;
 			}
 		} else if(target) {
 			MakeAttack();
@@ -115,6 +117,7 @@ public class Soldier : MonoBehaviour {
 			if(owner) {
 				owner.AddKill();
 				owner.StopSound("Attack");
+				currentlyActive = false;
 			}
 		}
 	}
@@ -140,6 +143,7 @@ public class Soldier : MonoBehaviour {
 	}
 
 	public void SetDestination(Vector3 destination) {
+		currentlyActive = true;
 		this.destination = destination;
 		targetRotation = Quaternion.LookRotation(destination - transform.position);
 		rotating = true;
@@ -147,7 +151,6 @@ public class Soldier : MonoBehaviour {
 		if(owner) owner.StopSound("Footsteps");
 		TurnOffWeaponBeams();
 		if(target) {
-			//target.Deselect();
 			target = null;
 			if(owner) owner.StopSound("Attack");
 		}
@@ -155,7 +158,7 @@ public class Soldier : MonoBehaviour {
 
 	public bool Attack(Soldier target) {
 		if(TargetTooFarAway(target)) return false;
-		//Debug.Log("attack target");
+		currentlyActive = true;
 		this.target = target;
 		destination = transform.position;
 		targetRotation = Quaternion.LookRotation(target.transform.position - transform.position);
@@ -219,8 +222,11 @@ public class Soldier : MonoBehaviour {
 		return healthPoints / maxHealthPoints;
 	}
 
-	public float getRange() {
+	public float GetRange() {
 		return range;
 	}
 
+	public bool IsActive() {
+		return currentlyActive;
+	}
 }
