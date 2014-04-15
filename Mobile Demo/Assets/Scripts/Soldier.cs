@@ -20,6 +20,7 @@ public class Soldier : MonoBehaviour {
 	private int numKills = 0;
 	private float range = 0.0f;
 	private bool currentlyActive = false;
+	private bool madeMove = false;
 
 	// Use this for initialization
 	void Start () {
@@ -44,7 +45,7 @@ public class Soldier : MonoBehaviour {
 				destination = Resources.InvalidPosition;
 				moving = false;
 				if(owner) owner.StopSound("Footsteps");
-				if(!target) currentlyActive = false;
+				if(!target) EndMove();
 			}
 		} else if(target) {
 			MakeAttack();
@@ -114,7 +115,7 @@ public class Soldier : MonoBehaviour {
 				owner.AddKill();
 				owner.StopSound("Attack");
 			}
-			currentlyActive = false;
+			EndMove();
 		}
 	}
 
@@ -139,7 +140,7 @@ public class Soldier : MonoBehaviour {
 	}
 
 	public void SetDestination(Vector3 destination) {
-		currentlyActive = true;
+		StartMove();
 		this.destination = destination;
 		targetRotation = Quaternion.LookRotation(destination - transform.position);
 		rotating = true;
@@ -154,7 +155,7 @@ public class Soldier : MonoBehaviour {
 
 	public bool Attack(Soldier target) {
 		if(TargetTooFarAway(target)) return false;
-		currentlyActive = true;
+		StartMove();
 		this.target = target;
 		destination = transform.position;
 		targetRotation = Quaternion.LookRotation(target.transform.position - transform.position);
@@ -192,6 +193,11 @@ public class Soldier : MonoBehaviour {
 		Hide();
 	}
 
+	public void StartTurn() {
+		madeMove = false;
+		HideShield();
+	}
+
 	public bool Damage(float damage) {
 		healthPoints -= damage;
 		if(healthPoints < 0) {
@@ -203,7 +209,9 @@ public class Soldier : MonoBehaviour {
 	}
 
 	public void Defend() {
+		StartMove();
 		ShowShield();
+		EndMove();
 	}
 
 	public Soldier GetTarget() {
@@ -224,5 +232,27 @@ public class Soldier : MonoBehaviour {
 
 	public bool IsActive() {
 		return currentlyActive;
+	}
+
+	public bool CanMove() {
+		return !madeMove;
+	}
+
+	public bool CanAttack() {
+		//check for target in range
+		return !madeMove;
+	}
+
+	public bool CanDefend() {
+		return !madeMove;
+	}
+
+	private void StartMove() {
+		currentlyActive = true;
+		madeMove = true;
+	}
+
+	private void EndMove() {
+		currentlyActive = false;
 	}
 }

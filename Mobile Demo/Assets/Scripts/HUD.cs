@@ -6,9 +6,9 @@ public class HUD : MonoBehaviour {
 	public GUISkin skin;
 	public Texture2D healthyTexture, damagedTexture, criticalTexture;
 	public Texture2D upArrow, downArrow, leftArrow, rightArrow;
-	public Texture2D move, moveActive;
-	public Texture2D attack, attackActive;
-	public Texture2D defend, defendActive;
+	public Texture2D move, moveActive, moveUnavailable;
+	public Texture2D attack, attackActive, attackUnavailable;
+	public Texture2D defend, defendActive, defendUnavailable;
 	public Texture2D cancel;
 
 	private SoundManager soundManager;
@@ -70,53 +70,73 @@ public class HUD : MonoBehaviour {
 			GUI.Label(new Rect(Screen.width - targetHealthWidth - 10, 10, targetHealthWidth, 20), "", targetStyle);
 		}
 		// display options buttons for the selected soldier
-		if(currentSelection && !humanPlayer.NoMovesLeft() && !humanPlayer.MakingMove()) {
+		if(currentSelection && humanPlayer && !humanPlayer.NoMovesLeft() && !humanPlayer.MakingMove()) {
+			if(humanPlayer.GetState() == Player.State.None) {
+				moveButtonActive = false;
+				defendButtonActive = false;
+				attackButtonActive = false;
+			}
 			int padding = 20;
 			int buttonWidth = 50;
 			int topPos = 80;
 			int leftPos = padding;
 			// move
-			buttonStyle.normal.background = moveButtonActive ? moveActive : move;
+			if(currentSelection.CanMove()) {
+				buttonStyle.normal.background = moveButtonActive ? moveActive : move;
+			} else {
+				buttonStyle.normal.background = moveUnavailable;
+			}
 			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "", buttonStyle)) {
-				if(soundManager) soundManager.PlaySound("ActionClick");
-				if(moveButtonActive) {
-					moveButtonActive = false;
-					if(humanPlayer) humanPlayer.SetState(Player.State.None);
-				} else {
-					moveButtonActive = true;
-					if(attackButtonActive) attackButtonActive = false;
-					if(defendButtonActive) defendButtonActive = false;
-					if(humanPlayer) humanPlayer.SetState(Player.State.Move);
+				if(currentSelection.CanMove()) {
+					if(moveButtonActive) {
+						if(soundManager) soundManager.PlaySound("CancelClick");
+						moveButtonActive = false;
+						humanPlayer.SetState(Player.State.None);
+					} else {
+						if(soundManager) soundManager.PlaySound("ActionClick");
+						moveButtonActive = true;
+						if(attackButtonActive) attackButtonActive = false;
+						if(defendButtonActive) defendButtonActive = false;
+						humanPlayer.SetState(Player.State.Move);
+					}
 				}
 			}
 			topPos += padding + buttonWidth;
 			// attack
-			buttonStyle.normal.background = attackButtonActive ? attackActive : attack;
+			if(currentSelection.CanAttack()) {
+				buttonStyle.normal.background = attackButtonActive ? attackActive : attack;
+			} else {
+				buttonStyle.normal.background = attackUnavailable;
+			}
 			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "", buttonStyle)) {
-				if(soundManager) soundManager.PlaySound("ActionClick");
-				if(attackButtonActive) {
-					attackButtonActive = false;
-					if(humanPlayer) humanPlayer.SetState(Player.State.None);
-				} else {
-					attackButtonActive = true;
-					if(moveButtonActive) moveButtonActive = false;
-					if(defendButtonActive) defendButtonActive = false;
-					if(humanPlayer) humanPlayer.SetState(Player.State.Attack);
+				if(currentSelection.CanAttack()) {
+					if(attackButtonActive) {
+						if(soundManager) soundManager.PlaySound("CancelClick");
+						attackButtonActive = false;
+						humanPlayer.SetState(Player.State.None);
+					} else {
+						if(soundManager) soundManager.PlaySound("ActionClick");
+						attackButtonActive = true;
+						if(moveButtonActive) moveButtonActive = false;
+						if(defendButtonActive) defendButtonActive = false;
+						humanPlayer.SetState(Player.State.Attack);
+					}
 				}
 			}
 			topPos += padding + buttonWidth;
 			// defend
-			buttonStyle.normal.background = defendButtonActive ? defendActive : defend;
+			if(currentSelection.CanDefend()) {
+				buttonStyle.normal.background = defendButtonActive ? defendActive : defend;
+			} else {
+				buttonStyle.normal.background = defendUnavailable;
+			}
 			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "", buttonStyle)) {
-				if(soundManager) soundManager.PlaySound("ActionClick");
-				if(defendButtonActive) {
-					defendButtonActive = false;
-					if(humanPlayer) humanPlayer.SetState(Player.State.None);
-				} else {
-					defendButtonActive = true;
+				if(currentSelection.CanDefend()) {
+					if(soundManager) soundManager.PlaySound("ActionClick");
+					currentSelection.Defend();
 					if(moveButtonActive) moveButtonActive = false;
 					if(attackButtonActive) attackButtonActive = false;
-					if(humanPlayer) humanPlayer.SetState(Player.State.Defend);
+					humanPlayer.StartMove(currentSelection);
 				}
 			}
 			topPos += padding + buttonWidth;
@@ -124,10 +144,9 @@ public class HUD : MonoBehaviour {
 			buttonStyle.normal.background = cancel;
 			if(GUI.Button(new Rect(leftPos, topPos, buttonWidth, buttonWidth), "", buttonStyle)) {
 				if(soundManager) soundManager.PlaySound("CancelClick");
-				if(humanPlayer) {
-					humanPlayer.DeselectSoldier();
-					humanPlayer.SetState(Player.State.None);
-				}
+				humanPlayer.DeselectSoldier();
+				humanPlayer.SetState(Player.State.None);
+
 			}
 		} else {
 			moveButtonActive = false;

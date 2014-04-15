@@ -89,16 +89,10 @@ public class Player : MonoBehaviour {
 					bool selectSoldier = false, deselectSoldier  = false;
 					if(selectedSoldier) { //already have soldier selected
 						if(clickedSoldier == selectedSoldier) { // clicked on selected soldier
-							if(currentState == State.Defend) {
-								selectedSoldier.Defend();
-								StartMove(selectedSoldier);
+							if(selectedSoldier.IsSelected()) {
 								deselectSoldier = true;
 							} else {
-								if(selectedSoldier.IsSelected()) {
-									deselectSoldier = true;
-								} else {
-									selectSoldier = true;
-								}
+								selectSoldier = true;
 							}
 						} else { // clicked on another soldier
 							deselectSoldier = true;
@@ -111,11 +105,6 @@ public class Player : MonoBehaviour {
 					if(selectSoldier) {
 						clickedSoldier.Select();
 						selectedSoldier = clickedSoldier;
-						if(currentState == State.Defend) {
-							selectedSoldier.Defend();
-							StartMove(selectedSoldier);
-							DeselectSoldier();
-						}
 					}
 				} else { // soldier is controlled by another player
 					bool selectEnemy = false, deselectEnemy = false;;
@@ -222,7 +211,7 @@ public class Player : MonoBehaviour {
 	public void DeselectSoldier() {
 		selectedSoldier.Deselect();
 		selectedSoldier = null;
-		if(currentState != State.Defend) currentState = State.None;
+		currentState = State.None;
 	}
 
 	public void PlaySound(string soundName) {
@@ -248,7 +237,9 @@ public class Player : MonoBehaviour {
 
 	public void StartTurn() {
 		//this should be retrieved from TurnManager? GameManager? one of these anyway ...
-		numMoves = 1;
+		numMoves = 2;
+		Soldier[] soldiers = GetComponentsInChildren<Soldier>();
+		foreach(Soldier soldier in soldiers) soldier.StartTurn();
 	}
 
 	public void EndTurn() {
