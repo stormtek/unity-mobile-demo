@@ -29,4 +29,12 @@ public class SoundManager : MonoBehaviour {
 			sound.Stop();
 		}
 	}
+
+	public bool IsPlayingSound(string soundName) {
+		AudioSource sound;
+		if(soundClips.TryGetValue(soundName, out sound)) {
+			return sound.isPlaying;
+		}
+		return false;
+	}
 }

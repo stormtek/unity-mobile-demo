@@ -222,6 +222,11 @@ public class Player : MonoBehaviour {
 		if(soundManager) soundManager.StopSound(soundName);
 	}
 
+	public bool IsPlayingSound(string soundName) {
+		if(soundManager) return soundManager.IsPlayingSound(soundName);
+		return false;
+	}
+
 	public string GetDisplayName() {
 		if(currentState == State.None) return displayName;
 		else return displayName + " (" + currentState + ")";

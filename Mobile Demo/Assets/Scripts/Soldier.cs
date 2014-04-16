@@ -5,14 +5,14 @@ public class Soldier : MonoBehaviour {
 
 	public string displayName = "Soldier";
 	public float moveSpeed = 2, rotateSpeed = 75;
-	public float weaponDamage = 0.35f;
+	public float weaponDamage = 20;
 
 	private Player owner;
 	private WeaponBeam[] beams;
 	private Shield shield;
 	private LOS los;
 	private bool started = false, weaponBeamsOn = false;
-	private bool selected = false, moving = false, rotating = false;
+	private bool selected = false, moving = false, rotating = false, attacking = false;
 	private Vector3 destination = Resources.InvalidPosition;
 	private Quaternion targetRotation;
 	private Soldier target;
@@ -21,6 +21,8 @@ public class Soldier : MonoBehaviour {
 	private float range = 0.0f;
 	private bool currentlyActive = false;
 	private bool madeMove = false;
+	private bool canAttack = false;
+	private bool startedAttack = false;
 
 	// Use this for initialization
 	void Start () {
@@ -30,7 +32,6 @@ public class Soldier : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if(!started) return;
-		if(!target && weaponBeamsOn) TurnOffWeaponBeams();
 		if(rotating) {
 			transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRotation, rotateSpeed * Time.deltaTime);
 			Quaternion inverseTargetRotation = new Quaternion(-targetRotation.x,-targetRotation.y,-targetRotation.z,-targetRotation.w);
@@ -47,7 +48,7 @@ public class Soldier : MonoBehaviour {
 				if(owner) owner.StopSound("Footsteps");
 				if(!target) EndMove();
 			}
-		} else if(target) {
+		} else if(attacking) {
 			MakeAttack();
 		}
 	}
@@ -107,15 +108,23 @@ public class Soldier : MonoBehaviour {
 	}
 	
 	private void MakeAttack() {
-		if(owner) owner.PlaySound("Attack");
-		TurnOnWeaponBeams();
-		if(target.Damage(weaponDamage)) {
-			numKills += 1;
-			if(owner) {
-				owner.AddKill();
-				owner.StopSound("Attack");
+		if(owner) {
+			if(!owner.IsPlayingSound("Attack")) {
+				if(!startedAttack && target) {
+					TurnOnWeaponBeams();
+					owner.PlaySound("Attack");
+					if(target.Damage(weaponDamage)) {
+						numKills++;
+						owner.AddKill();
+					}
+					startedAttack = true;
+				} else {
+					startedAttack = false;
+					attacking = false;
+					TurnOffWeaponBeams();
+					EndMove();
+				}
 			}
-			EndMove();
 		}
 	}
 
@@ -161,6 +170,7 @@ public class Soldier : MonoBehaviour {
 		targetRotation = Quaternion.LookRotation(target.transform.position - transform.position);
 		rotating = true;
 		moving = false;
+		attacking = true;
 		owner.StopSound("Footsteps");
 		return true;
 	}
@@ -196,11 +206,12 @@ public class Soldier : MonoBehaviour {
 	public void StartTurn() {
 		madeMove = false;
 		HideShield();
+		DetermineIfCanAttack();
 	}
 
 	public bool Damage(float damage) {
 		healthPoints -= damage;
-		if(healthPoints < 0) {
+		if(healthPoints <= 0) {
 			if(owner) owner.AddDeath();
 			Destroy(gameObject);
 			return true;
@@ -239,8 +250,7 @@ public class Soldier : MonoBehaviour {
 	}
 
 	public bool CanAttack() {
-		//check for target in range
-		return !madeMove;
+		return !madeMove && canAttack;
 	}
 
 	public bool CanDefend() {
@@ -254,5 +264,17 @@ public class Soldier : MonoBehaviour {
 
 	private void EndMove() {
 		currentlyActive = false;
+	}
+
+	private void DetermineIfCanAttack() {
+		Soldier[] allSoldiers = FindObjectsOfType(typeof(Soldier)) as Soldier[];
+		bool enemyNearby = false;
+		foreach(Soldier soldier in allSoldiers) {
+			if(soldier != this && soldier.owner != owner) {
+				if(!TargetTooFarAway(soldier)) enemyNearby = true;
+			}
+		}
+		if(enemyNearby) canAttack = true;
+		else canAttack = false;
 	}
 }
